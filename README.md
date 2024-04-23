@@ -5,7 +5,7 @@
 Run `npx nx serve frontend` to start the frontend development server.
 
 #### Run the backend:
-Run `npx nx serve backend` to start the frontend development server.
+Run `npx nx serve api` to start the frontend development server.
 
 ## Build for production
 
