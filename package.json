@@ -12,6 +12,7 @@
     "dotenv": "^16.4.5",
     "fastify": "~4.13.0",
     "fastify-plugin": "~4.5.0",
+    "http-status": "^1.7.4",
     "jsonwebtoken": "^9.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",

@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  password      String
+  firstName     String?         @map("first_name")
+  lastName      String?         @map("last_name")
+  industry      Json? // Optional JSON to store the array
+  occupation    Json? // Optional JSON to store the array
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  ApiCredential ApiCredential[]
+
+  @@map("users")
+}
+
+model ApiCredential {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+  secret String
+
+  @@map("api_credentials")
+}
