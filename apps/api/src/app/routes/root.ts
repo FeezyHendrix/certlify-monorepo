@@ -1,5 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
+import { ulid } from 'ulid';
+import jwt from 'jsonwebtoken';
+
 const prisma = new PrismaClient();
 
 export default async function (fastify: FastifyInstance) {
@@ -27,9 +30,73 @@ export default async function (fastify: FastifyInstance) {
     return { message: 'Logout successful' };
   });
 
-  fastify.post('/register', async function (request, reply) {
-    // Placeholder for registration logic
-    return { message: 'Registration successful' };
+  const bodyJsonSchema = {
+    type: 'object',
+    required: [
+      'email',
+      'password',
+      // Todo: sort password confirmation
+      // 'password_confirmation',
+      'first_name',
+      'last_name',
+    ],
+    properties: {
+      email: { type: 'string', format: 'email' },
+      password: { type: 'string', minLength: 8 },
+      // password_confirmation: { type: 'string', const: { $data: '/password' } },
+      first_name: { type: 'string', minLength: 2 },
+      last_name: { type: 'string', minLength: 2 },
+      industry: { type: 'array' },
+      occupation: { type: 'array' },
+    },
+    additionalProperties: false,
+  };
+
+  const schema = {
+    body: bodyJsonSchema,
+  };
+
+  interface UserCreateInput {
+    id: string;
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    industry: string[];
+    occupation: string[];
+  }
+
+  function generateAccessToken(username) {
+    return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+  }
+
+  fastify.post('/register', { schema }, async function (request, reply) {
+    const data = request.body as UserCreateInput;
+    data.id = ulid();
+
+    try {
+      const user = await prisma.user.create({
+        data,
+      });
+
+      return {
+        message: 'Registration successful',
+        data: { ...user, token: generateAccessToken(user.email) },
+      };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (error.code === 'P2002') {
+          return {
+            statusCode: 400,
+            error: 'Bad Request',
+            message: 'Invalid data',
+          };
+        }
+      }
+
+      throw error;
+    }
   });
 
   fastify.post('/verify-email', async function (request, reply) {

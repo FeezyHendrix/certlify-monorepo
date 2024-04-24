@@ -12,11 +12,13 @@
     "dotenv": "^16.4.5",
     "fastify": "~4.13.0",
     "fastify-plugin": "~4.5.0",
+    "jsonwebtoken": "^9.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "18.2.0",
     "styled-components": "5.3.6",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "ulid": "^2.3.0"
   },
   "devDependencies": {
     "@nx/cypress": "18.2.4",
