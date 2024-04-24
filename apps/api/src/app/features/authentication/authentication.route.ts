@@ -20,4 +20,6 @@ export default function authenticationRoutes(fastify: FastifyInstance, opts, don
     url: '/register',
     handler: registerController
   });
+
+  done();
 }
