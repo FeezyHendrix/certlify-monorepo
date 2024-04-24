@@ -10,7 +10,7 @@ const loginField = [
       name: 'password',
       type: 'password',
       // label: 'Password',
-      placeholder: 'Enter Password',
+      placeholder: 'Password',
       required: true,
     },
   ];
