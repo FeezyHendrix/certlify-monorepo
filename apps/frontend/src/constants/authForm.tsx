@@ -2,14 +2,14 @@ const loginField = [
     {
       name: 'email',
       type: 'text',
-      // label: 'Email',
+      label: 'Email',
       placeholder: 'Email',
       required: true,
     },
     {
       name: 'password',
       type: 'password',
-      // label: 'Password',
+      label: 'Password',
       placeholder: 'Password',
       required: true,
     },
@@ -26,7 +26,7 @@ const loginField = [
     {
       name: 'password',
       type: 'password',
-      label: 'Enter Password',
+      label: 'Password',
       placeholder: 'Password',
       required: true,
     },
