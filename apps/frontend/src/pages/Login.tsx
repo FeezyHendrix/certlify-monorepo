@@ -37,10 +37,10 @@ const Login: React.FC = () => {
 
     return (
         <div className="flex flex-col lg:flex-row">
-            <div className="flex">
+            <div className="lg:flex hidden">
                 <img src={authImage} className="md:w-screen lg:h-full md:h-1/2" alt="Sign Up" />
             </div>
-            <div className="flex flex-col -mt-[435px] lg:-m-[0] lg:px-52 md:-mt-[900px] bg-white rounded-t-2xl p-10 gap-4 w-full">
+            <div className="flex flex-col mt-20 lg:-m-[0] md:px-32 lg:px-52 bg-white rounded-t-2xl p-10 gap-4 w-full">
                 <div className="flex justify-start items-start flex-col gap-4">
                 <img src={loginImage} className="h-14" alt="Certlify"/>
                 <h1 className="text-xl font-medium ">
