@@ -3,3 +3,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'Monument Extended';
+    src: url('../assets/css/fonts/PPMonumentExtended-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-monument-extended {
+    font-family: 'Monument Extended';
+}
+
+.border-gradient {
+    border: 0.7px solid;
+    border-image: linear-gradient(to right, #000000 17.17%, #B2CDFA 100%);
+}

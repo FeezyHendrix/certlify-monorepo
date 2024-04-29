@@ -9,8 +9,11 @@ const Header: React.FC = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   return (
-    <div className="flex md:flex-row justify-between items-center py-4 px-6 md:px-20 bg-gradient-to-r from-[#000000] via-black to-[#041229]">
+    <header className='bg-black'>
+    <nav className=' py-4 md:py-6 px-6 md:px-20'>
+    <div className="flex justify-between">
       <div className="flex justify-between items-center md:w-auto">
         <button
           onClick={toggleMenu}
@@ -70,6 +73,8 @@ const Header: React.FC = () => {
         </Link>
       </div>
     </div>
+    </nav>
+    </header>
   );
 };
 
