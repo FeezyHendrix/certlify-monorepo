@@ -1,11 +1,11 @@
 import React from "react";
-import logo from "../assets/textlogo.svg";
+import Header from "../components/header";
 
 
 const LandingPage: React.FC = () => {
     return (
-        <div className="bg-black bg-cover">
-            
+        <div className=" bg-cover">
+            <Header/>
         </div>
     );
 }

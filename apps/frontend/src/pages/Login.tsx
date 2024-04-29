@@ -2,12 +2,13 @@ import React from "react";
 import { useState } from "react";
 import authImage from "../assets/authImage.svg"
 import SocialAuth from "../components/socialAuth";
-import google from "../assets/Google.svg";
+import google from "../assets/google.svg";
 import github from "../assets/github.svg";
 import { Link } from "react-router-dom";
 import loginImage from "../assets/login.svg"
 import Input from "../components/inputField";
 import loginField from "../constants/authForm";
+import "../assets/css/style.css"
 
 interface Field {
     name: string;
