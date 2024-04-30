@@ -19,5 +19,14 @@
     border: 0.7px solid;
     border-image: linear-gradient(to bottom, #000000 17.17%, #B2CDFA 100%) 1;
     box-shadow: -1px 4px 9.9px 0px #0F172A29;
-  }
+    background-image: linear-gradient(to bottom, #000000 100%, #042C6F 100%);
+}
 
+
+.button-border {
+    border: 0.69px solid;
+    border-image: linear-gradient(to right, rgba(255, 255, 255, 0.8) 13.84%, rgba(38, 50, 56, 0.38) 98.9%) 1;
+    border-image-slice: 1 0.8;
+    background: linear-gradient(to right, rgba(196, 208, 255, 0.2) 21.44%, rgba(153, 153, 153, 0.2) 104.12%);
+
+}
