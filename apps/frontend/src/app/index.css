@@ -17,5 +17,7 @@
 
 .border-gradient {
     border: 0.7px solid;
-    border-image: linear-gradient(to right, #000000 17.17%, #B2CDFA 100%);
-}
+    border-image: linear-gradient(to bottom, #000000 17.17%, #B2CDFA 100%) 1;
+    box-shadow: -1px 4px 9.9px 0px #0F172A29;
+  }
+
