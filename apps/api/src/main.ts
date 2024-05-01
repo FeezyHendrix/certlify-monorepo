@@ -1,51 +1,41 @@
-import Fastify from 'fastify';
-import { app } from './app/app';
-import { HttpException } from './app/utils/errors';
-import httpStatus from 'http-status';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { initDBClient } from './internal/db';
+import { configureDB } from './config/db';
+import { loadEnv, env } from './config/env';
+import { App } from './app';
+import { configureRedisCache } from './config/redis-cache';
+import { TokenStore } from './internal/token-store';
+import { MailService } from '@sendgrid/mail';
+import { Otp } from './modules/otp';
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+async function main() {
+  loadEnv();
 
-function configureErrorHandling(server): void {
-  server.setErrorHandler(function (error, request, reply) {
-    this.log.error(error);
+  const app = App({ logger: true });
 
-    if (error instanceof HttpException) {
-      reply
-        .status(error.status)
-        .send({ message: error.message, stack: error.stack });
-      return;
+  const db = await configureDB(app.log);
+
+  initDBClient(db);
+
+  const redisCache = await configureRedisCache(app.log);
+
+  const tokenStore = new TokenStore(env.TOKEN_STORE_SECRET, redisCache);
+
+  app.decorate('redisCache', redisCache);
+  app.decorate('tokenStore', tokenStore);
+
+  const mailService = new MailService();
+  mailService.setApiKey(env.SENDGRID_API_KEY);
+
+  app.decorate('sendGridMail', mailService);
+
+  app.decorate('otpUtil', new Otp(redisCache));
+
+  app.listen({ port: env.PORT, host: env.HOST }, (err) => {
+    if (err != null) {
+      app.log.error(err);
+      process.exit(1);
     }
-
-    if (error instanceof PrismaClientKnownRequestError) {
-      console.log('INSTANCE OF PRISMA ERROR');
-      if (error.code === 'P2002') {
-        reply.status(httpStatus.BAD_REQUEST).send({ message: 'Invalid data ' });
-        return;
-      }
-    }
-
-    reply
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Internal Server Error!' });
   });
 }
 
-
-const server = Fastify({
-  logger: true,
-});
-
-server.register(app);
-
-configureErrorHandling(server);
-
-server.listen({ port, host }, (err) => {
-  if (err) {
-    server.log.error(err);
-    process.exit(1);
-  } else {
-    console.log(`[ ready ] http://${host}:${port}`);
-  }
-});
+main();
