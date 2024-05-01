@@ -6,6 +6,7 @@ import { configureRedisCache } from './config/redis-cache';
 import { TokenStore } from './internal/token-store';
 import { MailService } from '@sendgrid/mail';
 import { Otp } from './modules/otp';
+import { TokenAuth } from './modules/token-auth';
 
 async function main() {
   loadEnv();
@@ -19,9 +20,10 @@ async function main() {
   const redisCache = await configureRedisCache(app.log);
 
   const tokenStore = new TokenStore(env.TOKEN_STORE_SECRET, redisCache);
+  const tokenAuth = new TokenAuth(tokenStore);
 
   app.decorate('redisCache', redisCache);
-  app.decorate('tokenStore', tokenStore);
+  app.decorate('tokenAuth', tokenAuth);
 
   const mailService = new MailService();
   mailService.setApiKey(env.SENDGRID_API_KEY);

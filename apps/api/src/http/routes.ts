@@ -10,6 +10,7 @@ export function routes(
   done: (err?: any) => void
 ) {
   fastify.decorateRequest('claim', null);
+  fastify.decorateRequest('claimId', '');
 
   for (const controller of controllers) {
     controller(fastify, opt, done);

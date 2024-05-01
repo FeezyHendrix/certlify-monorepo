@@ -1,6 +1,7 @@
 import { DURATION } from '../internal/enums';
 import { hashPassword, verifyPassword } from '../utils/bcrypt-utils';
 import { Redis } from 'ioredis';
+import { prefixedKey } from '../utils/prefixed-key';
 
 export interface CreateOtpArgs {
   /** Key that would be linked to the otp  */
@@ -12,12 +13,12 @@ export interface CreateOtpArgs {
 }
 
 export class Otp {
-  private readonly prefix = 'otp:';
+  private readonly prefix = 'otp';
 
   constructor(private readonly appCache: Redis) {}
 
   private otpKey(key: string) {
-    return `${this.prefix}${key}`;
+    return prefixedKey(this.prefix, key);
   }
 
   public async generate({

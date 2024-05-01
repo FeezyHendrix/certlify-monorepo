@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { RouterFastifyCtx } from '../../internal/http';
-import { TokenStore } from '../../internal/token-store';
 import { HttpException } from '../../internal/errors';
 import httpStatus from 'http-status';
 import { AuthClaim } from '../../internal/types';
+import { TokenAuth } from '../../modules/token-auth';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export async function authPreHandler(
@@ -13,19 +13,20 @@ export async function authPreHandler(
 ) {
   const ctx = <RouterFastifyCtx>this;
 
-  const tokenStore = <TokenStore>ctx.tokenStore;
+  const tokenAuth = <TokenAuth>ctx.tokenAuth;
 
-  const token = request.headers?.authorization?.split?.(' ')?.[1];
+  const auth_token = request.headers?.authorization?.split?.(' ')?.[1];
 
-  if (token == null || token == '') {
+  if (auth_token == null || auth_token == '') {
     throw new HttpException(httpStatus.UNAUTHORIZED, 'unauthorized');
   }
 
-  const tokenPayload = await tokenStore.peek<AuthClaim>(token);
+  const tokenPayload = await tokenAuth.decode<AuthClaim>(auth_token);
 
   if (tokenPayload == null) {
     throw new HttpException(httpStatus.UNAUTHORIZED, 'unauthorized');
   }
 
   (request as any).claim = tokenPayload;
+  (request as any).claimId = await tokenAuth.getTokenId(auth_token);
 }

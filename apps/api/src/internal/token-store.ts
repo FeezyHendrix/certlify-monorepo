@@ -1,8 +1,15 @@
 import crypto from 'crypto';
 import { Redis } from 'ioredis';
+import { prefixedKey } from '../utils/prefixed-key';
 
 export class TokenStore {
+  private readonly prefix = 'token_store';
+
   constructor(private secret: string, private redis: Redis) {}
+
+  private tokenKey(token: string) {
+    return prefixedKey(this.prefix, token);
+  }
 
   async commision<T = any>(
     key: string,
@@ -15,17 +22,19 @@ export class TokenStore {
       .digest('hex');
 
     const content = JSON.stringify(val);
+
     if (time == null) {
-      await this.redis.set(token, content);
+      await this.redis.set(this.tokenKey(token), content);
     } else {
-      await this.redis.set(token, content, 'PX', time);
+      await this.redis.set(this.tokenKey(token), content, 'PX', time);
     }
 
     return token;
   }
 
   async peek<T = any>(token: string): Promise<T> {
-    const result = await this.redis.get(token);
+    const result = await this.redis.get(this.tokenKey(token));
+
     if (!result) {
       return null;
     }
@@ -34,12 +43,13 @@ export class TokenStore {
   }
 
   async extend<T = any>(token: string, time: string): Promise<T> {
-    const result = await this.redis.get(token);
+    const result = await this.redis.get(this.tokenKey(token));
+
     if (!result) {
       return null;
     }
 
-    await this.redis.pexpire(token, time);
+    await this.redis.pexpire(this.tokenKey(token), time);
 
     return JSON.parse(result);
   }
@@ -51,22 +61,23 @@ export class TokenStore {
       .digest('hex');
 
     // make sure the token exists
-    const result = await this.redis.get(token);
+    const result = await this.redis.get(this.tokenKey(token));
     if (!result) return;
 
     const content = JSON.stringify(newVal);
-    const ttl = await this.redis.pttl(token);
+    const ttl = await this.redis.pttl(this.tokenKey(token));
 
-    await this.redis.set(token, content, 'PX', ttl);
+    await this.redis.set(this.tokenKey(token), content, 'PX', ttl);
   }
 
   async decommission<T = any>(token: string): Promise<T> {
-    const result = await this.redis.get(token);
+    const result = await this.redis.get(this.tokenKey(token));
+
     if (!result) {
       return null;
     }
 
-    await this.redis.del(token);
+    await this.redis.del(this.tokenKey(token));
 
     return JSON.parse(result);
   }
@@ -77,6 +88,6 @@ export class TokenStore {
       .update(key)
       .digest('hex');
 
-    await this.redis.del(token);
+    await this.redis.del(this.tokenKey(token));
   }
 }

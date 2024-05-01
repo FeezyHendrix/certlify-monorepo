@@ -15,7 +15,6 @@ import { HttpException } from '../../../internal/errors';
 import httpStatus from 'http-status';
 import { env } from '../../../config/env';
 import { Otp } from '../../../modules/otp';
-import { TokenStore } from '../../../internal/token-store';
 import { OtpValidation } from './validations/otp.schema';
 import { CompleteProfileValidation } from './validations/complete-profile.schema';
 import { authPreHandler } from '../../pre-handlers/auth.handler';
@@ -25,6 +24,7 @@ import { prefixedKey } from '../../../utils/prefixed-key';
 import { ForgotPasswordValidation } from './validations/forgot-password.schema';
 import { MailService } from '@sendgrid/mail';
 import { ResetPasswordValidation } from './validations/reset-password.schema';
+import { TokenAuth } from '../../../modules/token-auth';
 
 const authRoute = routePrefix('auth');
 
@@ -111,7 +111,7 @@ export const verifySignUpEmail = post(
   async (ctx, request, reply) => {
     const payload = new OtpValidation(request.body);
     const redisCache = <Redis>ctx.redisCache;
-    const tokenStore = <TokenStore>ctx.tokenStore;
+    const tokenAuth = <TokenAuth>ctx.TokenAuth;
     const otpUtil = <Otp>ctx.otpUtil;
 
     const key = await genOtpIdxKey(OtpFlow.VERIFY_EMAIL, payload.otp);
@@ -130,7 +130,7 @@ export const verifySignUpEmail = post(
 
     await otpUtil.revoke(onboardingUser.id);
 
-    const auth_token = await tokenStore.commision(onboardingUser.id, {
+    const auth_token = await tokenAuth.generate({
       id: onboardingUser.id,
       email: metadata.email,
     });
@@ -190,7 +190,7 @@ export const login = post(
     schema: { body: EmailAuthValidation.schema },
   },
   async (ctx, request, reply) => {
-    const tokenStore = <TokenStore>ctx.tokenStore;
+    const tokenAuth = <TokenAuth>ctx.tokenAuth;
 
     const payload = new EmailAuthValidation(request.body);
 
@@ -212,7 +212,9 @@ export const login = post(
       );
     }
 
-    const auth_token = await tokenStore.commision(user.id, { id: user.id });
+    const auth_token = await tokenAuth.generate({
+      id: user.id,
+    });
 
     reply
       .status(httpStatus.OK)
@@ -312,10 +314,11 @@ export const logout = get(
   authRoute('logout'),
   { preHandler: [authPreHandler] },
   async (ctx, request, reply) => {
-    const tokenStore = <TokenStore>ctx.tokenStore;
-    const authClaim = <AuthClaim>request.claim;
+    const tokenAuth = <TokenAuth>ctx.tokenAuth;
 
-    await tokenStore.revoke(authClaim.id);
+    const authClaimId = <string>request.claimId;
+
+    await tokenAuth.revoke(authClaimId);
 
     reply.status(200).send(new SuccessResponse());
   }
