@@ -2,8 +2,6 @@ import React from 'react';
 import Header from '../components/header';
 import line from '../assets/line.svg';
 import circle from '../assets/circle.svg';
-import circle2 from '../assets/circle2.svg';
-import line2 from '../assets/line2.svg';
 import certificate from '../assets/certificate.svg';
 
 const LandingPage: React.FC = () => {

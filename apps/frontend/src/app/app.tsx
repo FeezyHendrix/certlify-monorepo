@@ -7,6 +7,7 @@ import SignUp from '../pages/SignUp';
 import OTP from '../pages/OTP';
 import Welcome from '../pages/Welcome';
 import ProfileInformation from '../pages/ProfileInformation';
+import EmailConfirmation from '../pages/EmailConfirmation';
 import './index.css';
 
 const App: React.FC = () => {
@@ -19,6 +20,7 @@ const App: React.FC = () => {
       <Route path="/forgotten-password" element={<ForgottenPassword />} />
       <Route path="/otp" element={<OTP />} />
       <Route path="/profile-form" element={<ProfileInformation />} />
+      <Route path="/email-confirm" element={<EmailConfirmation />} />
     </Routes>
   );
 };
