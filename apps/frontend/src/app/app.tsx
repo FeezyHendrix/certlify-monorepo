@@ -6,6 +6,7 @@ import Login from '../pages/Login';
 import SignUp from '../pages/SignUp';
 import OTP from '../pages/OTP';
 import Welcome from '../pages/Welcome';
+import ProfileInformation from '../pages/ProfileInformation';
 import './index.css';
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
       <Route path="/register" element={<SignUp />} />
       <Route path="/forgotten-password" element={<ForgottenPassword />} />
       <Route path="/otp" element={<OTP />} />
+      <Route path="/profile-form" element={<ProfileInformation />} />
     </Routes>
   );
 };

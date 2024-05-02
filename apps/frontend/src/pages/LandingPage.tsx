@@ -10,44 +10,47 @@ const LandingPage: React.FC = () => {
   return (
     <>
       <Header />
-      <div className="bg-black pt-8 flex justify-between">
+      <div className="bg-black pt-8 flex justify-between gap-1 md:gap-12 lg:gap-36 border-0">
         <div className="relative">
-          <img src={line} className="absolute bottom-4 top-11" alt="Line" />
-          <img src={circle} className="" alt="Circle" />
+        <img src={line} className="absolute md:relative bottom-4 top-11 md:w-14" alt="Line" />
+          <img src={circle} className="md:absolute md:top-2 md:bottom-3 md:right-1 md:left-4" alt="Circle" />
         </div>
-        <div className="pt-10 flex flex-col w-full border-x-[0.75px] border-gradient bg-gradient-to-b from-[#000000] to-10% via-[#000000] to-[#042C6F] to-5% mx-2">
-          <h1 className="text-white font-monument-extended text-[16px] text-center">
+       <div>
+       <h1 className="gradient-text font-monument-extended text-[16px] md:text-3xl lg:text-[42px] lg:leading-normal text-center">
             Effortless Certificate Management
           </h1>
-          <div className="px-10 py-6">
-            <p className="text-white text-center text-base leading-snug font-normal">
+       <div className="pt-10 flex flex-col w-full border-x-[0.75px] border-gradient mx-2 md:mx-0">
+         
+          <div className="px-10 py-6 lg:px-36">
+            <p className="text-white text-center text-base lg:text-lg leading-snug font-normal">
               Easily generate your certificates and share them at your
               convenience. Anywhere, anytime and anyday
             </p>
           </div>
           <div className="flex justify-center pt-2 pb-10">
-            <button className="bg-[#FFFFFF] text-black w-1/3 py-2 font-medium text-base rounded-lg">
+            <button className="bg-[#FFFFFF] text-black w-1/5 py-2 font-medium text-base rounded-lg">
               Get Started
             </button>
           </div>
         </div>
+       </div>
         <div className="relative">
-          <img src={line2} alt="Line2" />
-          <img src={circle2} className="absolute top-36" alt="" />
+        <img src={line} className="absolute md:relative bottom-4 md:top-[110px] top-11 md:w-14 md:rotate-180" alt="Line" />
+          <img src={circle} className="md:absolute md:top-2 md:bottom-3 md:rotate-180" alt="Circle" />
         </div>
       </div>
-      <div className="bg-black py-14 px-4 ">
+      <div className="bg-black py-14 px-4 lg:py-32">
         <div className="block md:hidden pb-4">
           <h1 className="text-white font-monument-extended text-[16px] text-center">
             user-friendly platform for generating and distributing certificates
           </h1>
         </div>
-        <div>
-          <div className="flex justify-center">
-            <img src={certificate} alt="Certificate" />
+        <div className='md:flex md:flex-row lg:items-center'>
+          <div className="flex justify-center md:justify-start w-1/2 lg:pl-10 lg:w-[40%]">
+            <img src={certificate} className='md:w-72 lg:w-[430px]' alt="Certificate" />
           </div>
-          <div className="flex justify-center px-12 py-4">
-            <p className="text-white text-center text-sm font-normal">
+          <div className="flex justify-center md:justify-end px-12 py-4 w-[60%] lg:w-1/2">
+            <p className="text-white text-center md:text-start text-sm lg:text-lg font-normal">
               Introducing our user-friendly certificate generation and
               distribution platform. Effortlessly create custom certificates and
               distribute them to your participants with just a few clicks. Say
