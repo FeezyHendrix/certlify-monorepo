@@ -32,6 +32,10 @@ export class TokenStore {
     return token;
   }
 
+  async replicateToken(key: string): Promise<string> {
+    return crypto.createHmac('sha256', this.secret).update(key).digest('hex');
+  }
+
   async peek<T = any>(token: string): Promise<T> {
     const result = await this.redis.get(this.tokenKey(token));
 

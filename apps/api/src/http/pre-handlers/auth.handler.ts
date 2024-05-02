@@ -3,7 +3,8 @@ import { RouterFastifyCtx } from '../../internal/http';
 import { HttpException } from '../../internal/errors';
 import httpStatus from 'http-status';
 import { AuthClaim } from '../../internal/types';
-import { TokenAuth } from '../../modules/token-auth';
+import { InvalidTokenError, TokenAuth } from '../../modules/token-auth';
+import Deasyncify from 'deasyncify';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export async function authPreHandler(
@@ -21,10 +22,16 @@ export async function authPreHandler(
     throw new HttpException(httpStatus.UNAUTHORIZED, 'unauthorized');
   }
 
-  const tokenPayload = await tokenAuth.decode<AuthClaim>(auth_token);
+  const [tokenPayload, err] = await Deasyncify.watch(
+    tokenAuth.verify<AuthClaim>(auth_token)
+  );
 
-  if (tokenPayload == null) {
-    throw new HttpException(httpStatus.UNAUTHORIZED, 'unauthorized');
+  if (err != null) {
+    if (err instanceof InvalidTokenError) {
+      throw new HttpException(httpStatus.UNAUTHORIZED, 'unauthorized');
+    }
+
+    throw err;
   }
 
   (request as any).claim = tokenPayload;

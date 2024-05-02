@@ -3,6 +3,12 @@ import { customAlphabet } from 'nanoid';
 
 const genTokenId = customAlphabet('abcdefghijklmnopqrstuvwzyz123456789');
 
+export class InvalidTokenError extends Error {
+  constructor() {
+    super('INVALID_TOKEN');
+  }
+}
+
 export class TokenAuth {
   constructor(private readonly tokenStore: TokenStore) {}
 
@@ -24,10 +30,26 @@ export class TokenAuth {
     return content;
   }
 
+  async verify<T = any>(auth_token: string): Promise<T> {
+    const [id, token] = auth_token.split('.');
+
+    if (!id || !token) throw new InvalidTokenError();
+
+    const content = await this.tokenStore.peek<T>(token);
+
+    if (content == null) throw new InvalidTokenError();
+
+    const replicatedToken = await this.tokenStore.replicateToken(id);
+
+    if (token != replicatedToken) throw new InvalidTokenError();
+
+    return content;
+  }
+
   async invalidate(auth_token: string) {
     const token = auth_token.split('.')?.[1];
 
-    if (token == null || token || '') return;
+    if (token == null || token == '') return;
 
     await this.tokenStore.decommission(token);
   }
