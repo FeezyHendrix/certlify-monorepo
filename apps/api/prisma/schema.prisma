@@ -23,10 +23,12 @@ model User {
 }
 
 model ApiCredential {
-  id      String @id
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String
-  secret  String
+  id         String   @id
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    String
+  secret     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("api_credentials")
 }

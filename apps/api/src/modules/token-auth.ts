@@ -46,8 +46,8 @@ export class TokenAuth {
     return content;
   }
 
-  async invalidate(auth_token: string) {
-    const token = auth_token.split('.')?.[1];
+  async invalidate(authToken: string) {
+    const token = authToken.split('.')?.[1];
 
     if (token == null || token == '') return;
 

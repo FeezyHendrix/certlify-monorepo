@@ -36,7 +36,7 @@ export const initiateSignup = post(
     const sendGridMail = <MailService>ctx.sendGridMail;
     const otpUtil = <Otp>ctx.otpUtil;
 
-    const payload = new EmailAuthValidation(request.body);
+    const payload = <EmailAuthValidation>request.body;
 
     const userWithEmail = await getUserByEmail(payload.email);
 
@@ -109,7 +109,7 @@ export const verifySignUpEmail = post(
   authRoute('/signup/email/verify'),
   { schema: { body: OtpValidation.schema } },
   async (ctx, request, reply) => {
-    const payload = new OtpValidation(request.body);
+    const payload = <OtpValidation>request.body;
     const redisCache = <Redis>ctx.redisCache;
     const tokenAuth = <TokenAuth>ctx.TokenAuth;
     const otpUtil = <Otp>ctx.otpUtil;
@@ -151,7 +151,7 @@ export const completeProfile = post(
   },
   async (ctx, request, reply) => {
     const authClaim = <AuthClaim>request.claim;
-    const payload = new CompleteProfileValidation(request.body);
+    const payload = <CompleteProfileValidation>request.body;
 
     const redisCache = <Redis>ctx.redisCache;
 
@@ -192,7 +192,7 @@ export const login = post(
   async (ctx, request, reply) => {
     const tokenAuth = <TokenAuth>ctx.tokenAuth;
 
-    const payload = new EmailAuthValidation(request.body);
+    const payload = <EmailAuthValidation>request.body;
 
     const user = await getUserByEmail(payload.email);
 
@@ -230,7 +230,7 @@ export const forgotPassword = post(
     const otpUtil = <Otp>ctx.otpUtil;
     const sendGridMail = <MailService>ctx.sendGridMail;
 
-    const payload = new ForgotPasswordValidation(request.body);
+    const payload = <ForgotPasswordValidation>request.body;
 
     const user = await getUserByEmail(payload.email);
 
@@ -290,7 +290,7 @@ export const resetPassword = post(
   async (ctx, request, reply) => {
     const redisCache = <Redis>ctx.redisCache;
 
-    const payload = new ResetPasswordValidation(request.body);
+    const payload = <ResetPasswordValidation>request.body;
 
     const key = await genOtpIdxKey(OtpFlow.RESET_PASSWORD, payload.otp);
 

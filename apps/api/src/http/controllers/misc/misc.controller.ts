@@ -23,7 +23,7 @@ export const resendOtp = post(
   '/otp/resend',
   { schema: { body: ResendOtpValidations.schema } },
   async (ctx, request, reply) => {
-    const payload = new ResendOtpValidations(request.body);
+    const payload = <ResendOtpValidations>request.body;
 
     const redisCache = <Redis>ctx.redisCache;
     const sendGridMail = <MailService>ctx.sendGridMail;
