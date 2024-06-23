@@ -1,17 +1,28 @@
-import styled from 'styled-components';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import ForgottenPassword from '../pages/ForgottenPassword';
+import LandingPage from '../pages/LandingPage';
+import Login from '../pages/Login';
+import SignUp from '../pages/SignUp';
+import OTP from '../pages/OTP';
+import Welcome from '../pages/Welcome';
+import ProfileInformation from '../pages/ProfileInformation';
+import EmailConfirmation from '../pages/EmailConfirmation';
+import './index.css';
 
-import NxWelcome from './nx-welcome';
-
-const StyledApp = styled.div`
-  // Your style here
-`;
-
-export function App() {
+const App: React.FC = () => {
   return (
-    <StyledApp>
-      <NxWelcome title="frontend" />
-    </StyledApp>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/welcome" element={<Welcome />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<SignUp />} />
+      <Route path="/forgotten-password" element={<ForgottenPassword />} />
+      <Route path="/otp" element={<OTP />} />
+      <Route path="/profile-form" element={<ProfileInformation />} />
+      <Route path="/email-confirm" element={<EmailConfirmation />} />
+    </Routes>
   );
-}
+};
 
 export default App;
