@@ -25,9 +25,7 @@ const OTP: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const otpValue = otp.join("");
-    // Send the OTP value to the backend server
-    console.log("OTP value:", otpValue);
+    // const otpValue = otp.join("");
   };
 
   return (

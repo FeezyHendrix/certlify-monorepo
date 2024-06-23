@@ -15,7 +15,7 @@ const Input: React.FC<InputProps> = ({
   name,
   type,
   label,
-  // placeholder,
+  placeholder,
   required,
   onChange,
 }) => {
@@ -26,7 +26,7 @@ const Input: React.FC<InputProps> = ({
         type={type}
         name={name}
         id={name}
-        // placeholder={placeholder}
+        placeholder={placeholder}
         required={required}
         onChange={onChange}
         className="border-[0.5px] border-[#A6AEBB] h-10 rounded-sm w-full"

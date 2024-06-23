@@ -1,6 +1,6 @@
 import React from 'react';
 import authImage from '../assets/authImage.svg';
-import Input from '../components/inputField';
+import Input from '../components/InputField';
 import { useState } from 'react';
 import {
   occupationList,
