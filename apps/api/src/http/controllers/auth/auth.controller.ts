@@ -22,9 +22,10 @@ import { AuthClaim } from '../../../internal/types';
 import { otpFlowKey, OtpFlow, genOtpIdxKey } from '../../../utils/otp-flow';
 import { prefixedKey } from '../../../utils/prefixed-key';
 import { ForgotPasswordValidation } from './validations/forgot-password.schema';
-import { MailService } from '@sendgrid/mail';
 import { ResetPasswordValidation } from './validations/reset-password.schema';
 import { TokenAuth } from '../../../modules/token-auth';
+import { getQueue } from 'apps/api/src/internal/bull';
+import { SendEmailJob } from 'apps/api/src/mq/bull/jobs';
 
 const authRoute = routePrefix('auth');
 
@@ -33,7 +34,9 @@ export const initiateSignup = post(
   { schema: { body: EmailAuthValidation.schema }, preHandler: [] },
   async (ctx, request, reply) => {
     const redisCache = <Redis>ctx.redisCache;
-    const sendGridMail = <MailService>ctx.sendGridMail;
+
+    const emailQueue = (<typeof getQueue>ctx.getQueue)<SendEmailJob>('email');
+
     const otpUtil = <Otp>ctx.otpUtil;
 
     const payload = <EmailAuthValidation>request.body;
@@ -83,17 +86,15 @@ export const initiateSignup = post(
       15 * DURATION.MINUTES
     );
 
-    // TODO: move this to job queue
-    sendGridMail
-      .send({
+    await emailQueue.add(
+      'email',
+      {
         to: payload.email,
-        from: env.SENDGRID_SENDER,
         subject: 'Verify your email',
-        html: `<p>your verification otp is ${otp}. it expires in 5 minutes</p>`,
-      })
-      .catch((err) => {
-        ctx.log.error(err);
-      });
+        body: `<p>your verification otp is ${otp}. it expires in 5 minutes</p>`,
+      },
+      { attempts: 3, backoff: 2 * DURATION.SECONDS }
+    );
 
     if (env.NODE_ENV != AppEnv.PRODUCTION) {
       reply.header('preview_otp', otp);
@@ -228,7 +229,7 @@ export const forgotPassword = post(
   async (ctx, request, reply) => {
     const redisCache = <Redis>ctx.redisCache;
     const otpUtil = <Otp>ctx.otpUtil;
-    const sendGridMail = <MailService>ctx.sendGridMail;
+    const emailQueue = (<typeof getQueue>ctx.getQueue)<SendEmailJob>('email');
 
     const payload = <ForgotPasswordValidation>request.body;
 
@@ -247,17 +248,15 @@ export const forgotPassword = post(
       expiresIn: 5 * DURATION.MINUTES,
     });
 
-    // TODO: move this to job queue
-    sendGridMail
-      .send({
+    await emailQueue.add(
+      'email',
+      {
         to: payload.email,
-        from: env.SENDGRID_SENDER,
         subject: 'Verify your email',
-        html: `<p>your verification otp is ${otp}. it expires in 5 minutes</p>`,
-      })
-      .catch((err) => {
-        ctx.log.error(err);
-      });
+        body: `<p>your verification otp is ${otp}. it expires in 5 minutes</p>`,
+      },
+      { attempts: 3, backoff: 2 * DURATION.SECONDS }
+    );
 
     if (env.NODE_ENV != AppEnv.PRODUCTION) {
       reply.header('preview_otp', otp);

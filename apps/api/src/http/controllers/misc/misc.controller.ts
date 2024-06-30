@@ -4,20 +4,24 @@ import { Industries, OccupationList } from '../../../internal/const';
 import { ResendOtpValidations } from './validations/resend-otp.schema';
 import { Redis } from 'ioredis';
 import { HttpException } from '../../../internal/errors';
-import { MailService } from '@sendgrid/mail';
 import { Otp } from '../../../modules/otp';
 import { AppEnv, DURATION } from '../../../internal/enums';
 import { env } from '../../../config/env';
+import { getQueue } from 'apps/api/src/internal/bull';
+import { SendEmailJob } from 'apps/api/src/mq/bull/jobs';
 
-export const industryList = get('/industry/list', (ctx, request, reply) => {
+export const industryList = get('/industry/list', (_ctx, _request, reply) => {
   reply.status(httpStatus.OK).send(new SuccessResponse({ data: Industries }));
 });
 
-export const occupationList = get('/occupation/list', (ctx, request, reply) => {
-  reply
-    .status(httpStatus.OK)
-    .send(new SuccessResponse({ data: OccupationList }));
-});
+export const occupationList = get(
+  '/occupation/list',
+  (_ctx, _request, reply) => {
+    reply
+      .status(httpStatus.OK)
+      .send(new SuccessResponse({ data: OccupationList }));
+  }
+);
 
 export const resendOtp = post(
   '/otp/resend',
@@ -26,7 +30,7 @@ export const resendOtp = post(
     const payload = <ResendOtpValidations>request.body;
 
     const redisCache = <Redis>ctx.redisCache;
-    const sendGridMail = <MailService>ctx.sendGridMail;
+    const emailQueue = (<typeof getQueue>ctx.getQueue)<SendEmailJob>('email');
     const otpUtil = <Otp>ctx.otpUtil;
 
     const metadata = await redisCache
@@ -46,17 +50,15 @@ export const resendOtp = post(
       expiresIn: 5 * DURATION.MINUTES,
     });
 
-    // TODO: move this to job queue
-    sendGridMail
-      .send({
+    await emailQueue.add(
+      'email',
+      {
         to: metadata.email,
-        from: env.SENDGRID_SENDER,
         subject: 'Verify your email',
-        html: `<p>your verification otp is ${otp}. it expires in 5 minutes</p>`,
-      })
-      .catch((err) => {
-        ctx.log.error(err);
-      });
+        body: `<p>your verification otp is ${otp}. it expires in 5 minutes</p>`,
+      },
+      { attempts: 3, backoff: 2 * DURATION.SECONDS }
+    );
 
     if (env.NODE_ENV != AppEnv.PRODUCTION) {
       reply.header('preview_otp', otp);

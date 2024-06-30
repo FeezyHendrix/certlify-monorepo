@@ -15,7 +15,7 @@ export function App(opts: FastifyServerOptions = {}) {
     options: { ...opts },
   });
 
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error, _request, reply) => {
     if (error instanceof HttpException) {
       reply.status(error.status).send({ message: error.message });
     } else if (error.validation) {
