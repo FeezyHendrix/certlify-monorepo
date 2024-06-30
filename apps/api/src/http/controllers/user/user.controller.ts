@@ -10,7 +10,7 @@ const userRoute = routePrefix('user');
 export const getUserController = get(
   userRoute(),
   { preHandler: [authPreHandler] },
-  async (ctx, request, reply) => {
+  async (_ctx, request, reply) => {
     const user = await getUserById((request as any).claim.id);
 
     reply

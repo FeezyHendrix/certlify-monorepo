@@ -7,6 +7,8 @@ import { TokenStore } from './internal/token-store';
 import { MailService } from '@sendgrid/mail';
 import { Otp } from './modules/otp';
 import { TokenAuth } from './modules/token-auth';
+import { initBull } from './config/bull';
+import './mq/bull/jobs';
 
 async function main() {
   loadEnv();
@@ -31,6 +33,8 @@ async function main() {
   app.decorate('sendGridMail', mailService);
 
   app.decorate('otpUtil', new Otp(redisCache));
+
+  initBull(app, env.REDIS_URL);
 
   app.listen({ port: env.PORT, host: env.HOST }, (err) => {
     if (err != null) {
